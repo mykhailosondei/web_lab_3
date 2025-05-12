@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenID Connect</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem 0.25rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #status {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .error {
+            color: #d9534f;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        pre {
+            background: #f0f0f0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Connect Casdoor</h1>
+    <div>
+        <button onclick="login()">Login</button>
+        <button onclick="fetchUserInfo()">User Info</button>
+    </div>
+    <div id="status">
+        <p>Click "User Info" to check authentication status.</p>
+    </div>
+</div>
+
+<script>
+    function fetchUserInfo() {
+        fetch('https://localhost:8081/user/info', {
+            credentials: 'include',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('User not authenticated');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('status').innerHTML = `
+                    <p class="success">Logged in as <strong>${data.username}</strong></p>
+                    <pre>User ID: ${data.userId}</pre>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('status').innerHTML = `
+                    <p class="error">❌ Not logged in</p>
+                    <p class="error">Error: ${error.message}</p>
+                `;
+            });
+    }
+
+    function login() {
+        window.location.href = 'https://localhost:8081/auth/login';
+    }
+</script>
+</body>
+</html>
